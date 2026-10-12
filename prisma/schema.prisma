@@ -1,0 +1,17 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+enum Role { USER ADMIN DEVELOPER }
+enum OrderStatus { PENDING ACTIVE COMPLETED CANCELLED FAILED }
+enum PaymentStatus { PENDING PAID EXPIRED FAILED }
+enum ProviderName { FIVESIM SMS_TIGER }
+enum TransactionType { DEPOSIT PURCHASE REFUND ADJUSTMENT }
+model User { id String @id @default(cuid()); email String @unique; passwordHash String; name String?; role Role @default(USER); balance Decimal @default(0) @db.Decimal(18,8); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; orders Order[]; transactions Transaction[]; apiKeys ApiKey[]; priceRules PriceRule[]; pushTokens PushToken[]; payments Payment[] }
+model Country { id String @id @default(cuid()); name String; iso String @unique; dialCode String; active Boolean @default(true); services Service[] }
+model Service { id String @id @default(cuid()); countryId String; name String; slug String; basePrice Decimal @db.Decimal(18,8); active Boolean @default(true); country Country @relation(fields:[countryId], references:[id], onDelete:Cascade); orders Order[]; priceRules PriceRule[]; @@unique([countryId,slug]) }
+model Order { id String @id @default(cuid()); userId String; serviceId String; provider ProviderName; providerOrderId String?; phoneNumber String?; status OrderStatus @default(PENDING); price Decimal @db.Decimal(18,8); smsCode String?; smsText String?; expiresAt DateTime?; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; user User @relation(fields:[userId],references:[id]); service Service @relation(fields:[serviceId],references:[id]); transaction Transaction? }
+model Transaction { id String @id @default(cuid()); userId String; orderId String? @unique; type TransactionType; amount Decimal @db.Decimal(18,8); currency String @default("USD"); reference String @unique; note String?; createdAt DateTime @default(now()); user User @relation(fields:[userId],references:[id]); order Order? @relation(fields:[orderId],references:[id]) }
+model ApiKey { id String @id @default(cuid()); userId String; name String; keyPrefix String; keyHash String @unique; active Boolean @default(true); createdAt DateTime @default(now()); lastUsedAt DateTime?; user User @relation(fields:[userId],references:[id],onDelete:Cascade) }
+model PriceRule { id String @id @default(cuid()); userId String?; serviceId String?; developerId String?; price Decimal @db.Decimal(18,8); markup Decimal @default(0) @db.Decimal(18,8); user User? @relation(fields:[userId],references:[id],onDelete:Cascade); service Service? @relation(fields:[serviceId],references:[id],onDelete:Cascade) }
+model Payment { id String @id @default(cuid()); userId String; amount Decimal @db.Decimal(18,8); coin String; network String; address String; status PaymentStatus @default(PENDING); expiresAt DateTime; externalId String? @unique; createdAt DateTime @default(now()); user User @relation(fields:[userId],references:[id]) }
+model PushToken { id String @id @default(cuid()); userId String; token String @unique; platform String; createdAt DateTime @default(now()); user User @relation(fields:[userId],references:[id],onDelete:Cascade) }
+model Setting { id String @id @default(cuid()); key String @unique; value String }

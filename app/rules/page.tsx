@@ -1,0 +1,1 @@
+export default function Rules(){return <main className="shell"><div className="panel" style={{marginTop:80,maxWidth:820}}><h1>Rules</h1><p>No fraud, spam, harassment, impersonation, illegal activity or attempts to abuse verification systems. Users must comply with the rules of the destination service. Numelixa may suspend accounts and cancel abusive orders.</p></div></main>}
