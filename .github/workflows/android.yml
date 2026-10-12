@@ -19,5 +19,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="android-v1.0.${GITHUB_RUN_NUMBER}"
-          gh release create "$TAG" android/app/build/outputs/apk/debug/app-debug.apk --title "Numelixa Android $TAG" --notes "Numelixa Android APK build" --latest
-          cp android/app/build/outputs/apk/debug/app-debug.apk /tmp/numelixa.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk numelixa.apk
+          gh release create "$TAG" numelixa.apk --title "Numelixa Android $TAG" --notes "Numelixa Android APK build" --latest
