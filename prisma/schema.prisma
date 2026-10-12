@@ -110,7 +110,7 @@ model ApiKey {
 }
 
 model PriceRule {
-  id String @id @default(cuid()) @default(cuid())
+  id String @id @default(cuid()) @map("_id")
   userId String?
   serviceId String?
   countryId String?
