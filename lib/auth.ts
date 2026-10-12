@@ -1,5 +1,9 @@
 import bcrypt from 'bcryptjs';
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
+
+type NumelixaJwtPayload = JWTPayload & {
+  type?: 'user' | 'admin';
+};
 
 function getSecret() {
   const rawSecret = process.env.JWT_SECRET;
@@ -29,7 +33,7 @@ export async function signSession(id: string) {
 export async function readSession(token?: string) {
   if (!token) return null;
   try {
-    const payload = await jwtVerify(token, getSecret());
+    const { payload } = await jwtVerify<NumelixaJwtPayload>(token, getSecret());
     return payload.type === 'user' ? payload.sub || null : null;
   } catch {
     return null;
@@ -47,7 +51,7 @@ export async function signAdminSession(email: string) {
 export async function readAdminSession(token?: string) {
   if (!token) return null;
   try {
-    const payload = await jwtVerify(token, getSecret());
+    const { payload } = await jwtVerify<NumelixaJwtPayload>(token, getSecret());
     if (payload.type !== 'admin' || typeof payload.sub !== 'string') return null;
     const configuredEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
     return configuredEmail && payload.sub.toLowerCase() === configuredEmail ? payload.sub : null;
