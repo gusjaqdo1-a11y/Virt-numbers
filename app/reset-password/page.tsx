@@ -1,1 +1,62 @@
-'use client';import {useSearchParams} from 'next/navigation';import {useState} from 'react';export default function Reset(){const q=useSearchParams();const [p,setP]=useState('');const [m,setM]=useState('');async function go(e:React.FormEvent){e.preventDefault();const r=await fetch('/api/auth/reset-password',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:q.get('token'),password:p})});const d=await r.json();setM(d.success?'Password updated. You can sign in now.':d.error?.message||'Unable to reset password.')}return <main className="auth"><div className="authbox"><a className="brand" href="/">NUMELIXA</a><h1>Choose a new password</h1><form onSubmit={go}><input required minLength={8} type="password" placeholder="New password" value={p} onChange={e=>setP(e.target.value)}/><button className="btn">Update password</button></form>{m&&<p>{m}</p>}</div></main>}
+'use client';
+
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+function ResetForm() {
+  const q = useSearchParams();
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const token = q.get('token');
+    if (!token) {
+      setMessage('Invalid or missing reset token.');
+      return;
+    }
+
+    const response = await fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ token, password }),
+    });
+
+    const data = await response.json();
+    setMessage(
+      data.success
+        ? 'Password updated. You can sign in now.'
+        : data.error?.message || 'Unable to reset password.',
+    );
+  }
+
+  return (
+    <div className="authbox">
+      <a className="brand" href="/">NUMELIXA</a>
+      <h1>Choose a new password</h1>
+      <form onSubmit={submit}>
+        <input
+          required
+          minLength={8}
+          type="password"
+          placeholder="New password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button className="btn">Update password</button>
+      </form>
+      {message && <p>{message}</p>}
+    </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <main className="auth">
+      <Suspense fallback={<div className="authbox"><p>Loading reset form…</p></div>}>
+        <ResetForm />
+      </Suspense>
+    </main>
+  );
+}
