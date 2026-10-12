@@ -1,0 +1,1 @@
+<resources><style name="Theme.Numelixa" parent="android:style/Theme.Material.Light.NoActionBar"><item name="android:fontFamily">sans</item><item name="android:colorAccent">#20252d</item><item name="android:navigationBarColor">#f6f8fb</item></style></resources>

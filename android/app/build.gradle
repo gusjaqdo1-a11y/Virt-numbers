@@ -1,5 +1,4 @@
-plugins { id 'com.android.application'; id 'org.jetbrains.kotlin.android'; id 'com.google.gms.google-services' }
-
+plugins { id 'com.android.application'; id 'org.jetbrains.kotlin.android' }
 android { namespace 'com.numelixa.app'; compileSdk 35
  defaultConfig { applicationId 'com.numelixa.app'; minSdk 26; targetSdk 35; versionCode 1; versionName '1.0' }
 }
