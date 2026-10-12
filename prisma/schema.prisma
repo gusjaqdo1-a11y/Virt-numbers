@@ -1,5 +1,5 @@
 generator client { provider = "prisma-client-js" }
-datasource db { provider = "mongodb" url = env("DATABASE_URL") }
+datasource db { provider = "mongodb" url = env("MONGODB_URI") }
 
 enum Role { USER ADMIN DEVELOPER }
 enum OrderStatus { PENDING ACTIVE COMPLETED CANCELLED FAILED }
