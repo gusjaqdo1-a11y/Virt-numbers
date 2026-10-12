@@ -7,12 +7,45 @@ datasource db {
   url      = env("MONGODB_URI")
 }
 
-enum Role { USER ADMIN DEVELOPER }
-enum OrderStatus { PENDING ACTIVE COMPLETED CANCELLED FAILED }
-enum PaymentStatus { PENDING PAID EXPIRED FAILED }
-enum ProviderName { FIVESIM SMS_TIGER }
-enum TransactionType { DEPOSIT PURCHASE REFUND ADJUSTMENT }
-enum TicketStatus { OPEN IN_PROGRESS RESOLVED CLOSED }
+enum Role {
+  USER
+  ADMIN
+  DEVELOPER
+}
+
+enum OrderStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  EXPIRED
+  FAILED
+}
+
+enum ProviderName {
+  FIVESIM
+  SMS_TIGER
+}
+
+enum TransactionType {
+  DEPOSIT
+  PURCHASE
+  REFUND
+  ADJUSTMENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
 
 model User {
   id String @id @default(cuid()) @map("_id")
