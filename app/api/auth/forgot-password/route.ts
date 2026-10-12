@@ -1,1 +1,6 @@
-import {NextResponse} from 'next/server'; export async function POST(){return NextResponse.json({success:true,message:'If the email exists, password reset instructions will be sent.'})}
+import { NextResponse } from 'next/server';
+import { randomBytes, createHash } from 'crypto';
+import { db } from '@/lib/db';
+import { sendEmail, emailLayout } from '@/lib/email';
+
+export async function POST(req:Request){try{const {email}=await req.json();if(!email)return NextResponse.json({success:true});const e=String(email).toLowerCase();const u=await db.user.findUnique({where:{email:e}});if(u){const token=randomBytes(32).toString('hex');const tokenHash=createHash('sha256').update(token).digest('hex');await db.passwordReset.deleteMany({where:{email:e}});await db.passwordReset.create({data:{email:e,tokenHash,expiresAt:new Date(Date.now()+30*60*1000)}});const base=process.env.NEXT_PUBLIC_APP_URL||'https://numelixa.com';const link=`${base}/reset-password?token=${token}`;await sendEmail(e,'Reset your NUMELIXA password',emailLayout('Reset your password',`<p>We received a password reset request.</p><p><a href="${link}">Reset password</a></p><p>This link expires in 30 minutes.</p>`));}return NextResponse.json({success:true,message:'If the email exists, reset instructions have been sent.'})}catch{return NextResponse.json({success:true,message:'If the email exists, reset instructions have been sent.'})}}
