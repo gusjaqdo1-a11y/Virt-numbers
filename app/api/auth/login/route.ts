@@ -15,6 +15,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!process.env.MONGODB_URI) {
+      console.error('[auth/login] MONGODB_URI is not configured');
+      return NextResponse.json(
+        { success: false, error: { code: 'AUTH_CONFIG_ERROR', message: 'Authentication is temporarily unavailable. Please configure the database connection in Vercel.' } },
+        { status: 503 },
+      );
+    }
+
+    if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+      console.error('[auth/login] JWT_SECRET is not configured');
+      return NextResponse.json(
+        { success: false, error: { code: 'AUTH_CONFIG_ERROR', message: 'Authentication is temporarily unavailable. Please configure JWT_SECRET in Vercel.' } },
+        { status: 503 },
+      );
+    }
+
     const user = await db.user.findUnique({ where: { email } });
     if (!user || user.suspended || !(await verifyPassword(password, user.passwordHash))) {
       return NextResponse.json(
@@ -36,9 +52,10 @@ export async function POST(req: NextRequest) {
       path: '/',
     });
     return res;
-  } catch {
+  } catch (error) {
+    console.error('[auth/login] failed', error);
     return NextResponse.json(
-      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Unable to sign in.' } },
+      { success: false, error: { code: 'INTERNAL_ERROR', message: 'Unable to sign in. Check the Vercel deployment logs for the server error.' } },
       { status: 500 },
     );
   }
