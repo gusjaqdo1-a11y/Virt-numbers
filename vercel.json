@@ -1,1 +1,1 @@
-{"framework":"nextjs","buildCommand":"npm run build","installCommand":"npm install","devCommand":"npm run dev"}
+{"framework":"nextjs","buildCommand":"npm run build","installCommand":"npm install","devCommand":"npm run dev","redirects":[{"source":"/android","destination":"https://github.com/gusjaqdo1-a11y/Virt-numbers/releases/latest/download/numelixa.apk","permanent":false}]}
