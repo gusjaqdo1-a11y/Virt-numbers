@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
+import { getAppUrl } from '@/lib/app-url';
 
 export async function GET(req: NextRequest) {
   const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
     path: '/',
   });
 
-  const base = (process.env.NEXT_PUBLIC_APP_URL?.trim() || new URL(req.url).origin).replace(/\/$/, '');
+  const base = getAppUrl(req);
   const redirectUri = `${base}/api/auth/google/callback`;
   const p = new URL('https://accounts.google.com/o/oauth2/v2/auth');
   p.searchParams.set('client_id', clientId);
